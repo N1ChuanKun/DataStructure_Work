@@ -1,14 +1,14 @@
 #pragma warning (disable:4996)
 #include "library.h"
 #include "tools.h"
-#define CHARS_NUM 256	// ÇÑ ¹ÙÀÌÆ®°¡ °¡Áú ¼ö ÀÖ´Â ÃÖ´ë Å©±â 2^8 = 256
+#define CHARS_NUM 256	// í•œ ë°”ì´íŠ¸ê°€ ê°€ì§ˆ ìˆ˜ ìˆëŠ” ìµœëŒ€ í¬ê¸° 2^8 = 256
 #define INDEX_TABLE 100
 #define BUFF_LENGTH 200
-Artist* artist_dir[CHARS_NUM];	// ¹è¿­ ÇÑ Ä­´ç artist Æ÷ÀÎÅÍ Å¸ÀÔ ÀÚ·áÇüÀ» ÀúÀåÇÏ´Â ¹è¿­
+Artist* artist_dir[CHARS_NUM];	// ë°°ì—´ í•œ ì¹¸ë‹¹ artist í¬ì¸í„° íƒ€ì… ìë£Œí˜•ì„ ì €ì¥í•˜ëŠ” ë°°ì—´
 SNode* index_dir[INDEX_TABLE];
 Artist* play_list[INDEX_TABLE];
 int num_index = 0;
-void initialize() // Aritst ¹è¿­°ú INDEX ¹è¿­À» ÃÊ±âÈ­
+void initialize() // Aritst ë°°ì—´ê³¼ INDEX ë°°ì—´ì„ ì´ˆê¸°í™”
 {
 	for (int i = 0; i < CHARS_NUM; i++)
 		artist_dir[i] = NULL;
@@ -26,21 +26,21 @@ void load(FILE* fp)
 	{
 		if (read_line(fp, buffer, BUFF_LENGTH) <= 0)
 			break;
-		name = strtok(buffer, "#");	// °ø¹é¹®ÀÚ Àü±îÁö ÅäÅ«È­ÇÏ¿© ÀúÀåÇÔ
-		if (strcmp(name, " ") == 0) // ÀÌ¸§ÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» °æ¿ì NULL¸®ÅÏ
+		name = strtok(buffer, "#");	// ê³µë°±ë¬¸ì ì „ê¹Œì§€ í† í°í™”í•˜ì—¬ ì €ì¥í•¨
+		if (strcmp(name, " ") == 0) // ì´ë¦„ì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš° NULLë¦¬í„´
 			name = NULL;
 		else
-			name = strdup(name); // ÀÌ¸§À» º¹Á¦ÇÏ¿© ÀúÀåÇÔ
-		title = strtok(NULL, "#");	// °ø¹é¹®ÀÚ Àü±îÁö ÅäÅ«È­ÇÏ¿© ÀúÀåÇÔ
-		if (strcmp(title, " ") == 0) // ÀÌ¸§ÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» °æ¿ì NULL¸®ÅÏ
+			name = strdup(name); // ì´ë¦„ì„ ë³µì œí•˜ì—¬ ì €ì¥í•¨
+		title = strtok(NULL, "#");	// ê³µë°±ë¬¸ì ì „ê¹Œì§€ í† í°í™”í•˜ì—¬ ì €ì¥í•¨
+		if (strcmp(title, " ") == 0) // ì´ë¦„ì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš° NULLë¦¬í„´
 			title = NULL;
 		else
-			title = strdup(title); // ÀÌ¸§À» º¹Á¦ÇÏ¿© ÀúÀåÇÔ
+			title = strdup(title); // ì´ë¦„ì„ ë³µì œí•˜ì—¬ ì €ì¥í•¨
 		printf("%s %s \n", name, title);
 		add_song(name, title);
 	}
 }
-Artist* create_artist(char* name) // Artist °´Ã¼¸¦ »ı¼º
+Artist* create_artist(char* name) // Artist ê°ì²´ë¥¼ ìƒì„±
 {
 	Artist* ptr_artist = (Artist*)malloc(sizeof(Artist));
 	ptr_artist->name = name;
@@ -51,20 +51,20 @@ Artist* create_artist(char* name) // Artist °´Ã¼¸¦ »ı¼º
 }
 Artist* add_artist(char* name)
 {
-	// Artist °´Ã¼¸¦ ¸¸µå´Â ÀÏÀ» ÇÔ¼ö·Î »ç¿ëÇÔ
+	// Artist ê°ì²´ë¥¼ ë§Œë“œëŠ” ì¼ì„ í•¨ìˆ˜ë¡œ ì‚¬ìš©í•¨
 	Artist* ptr_artist = create_artist(name);
-	Artist* p = artist_dir[(unsigned char)name[0]]; // »õ·Î ¸¸µé ¿¬°á¸®½ºÆ®ÀÇ Ã¹ ¹øÂ°(¹è¿­ÀÇ ÀÌ¸§)
-	Artist* q = NULL;	// ¿¬°á ¸®½ºÆ®¿¡¼­ p¸¦ µû¶ó°¡¸ç À§Ä¡¸¦ ±â¾ïÇÏ´Â ¿ëµµ·Î »ç¿ë
-	while (p != NULL && strcmp(p->name, name) < 0)	// ¼ø¼­°¡ ÀÖ´Â ¸®½ºÆ®¿¡¼­ pº¸´Ù ÀÛÀº °ªÀÌ ³ªÅ¸³¯ ¶§±îÁö ¹İº¹
+	Artist* p = artist_dir[(unsigned char)name[0]]; // ìƒˆë¡œ ë§Œë“¤ ì—°ê²°ë¦¬ìŠ¤íŠ¸ì˜ ì²« ë²ˆì§¸(ë°°ì—´ì˜ ì´ë¦„)
+	Artist* q = NULL;	// ì—°ê²° ë¦¬ìŠ¤íŠ¸ì—ì„œ pë¥¼ ë”°ë¼ê°€ë©° ìœ„ì¹˜ë¥¼ ê¸°ì–µí•˜ëŠ” ìš©ë„ë¡œ ì‚¬ìš©
+	while (p != NULL && strcmp(p->name, name) < 0)	// ìˆœì„œê°€ ìˆëŠ” ë¦¬ìŠ¤íŠ¸ì—ì„œ pë³´ë‹¤ ì‘ì€ ê°’ì´ ë‚˜íƒ€ë‚  ë•Œê¹Œì§€ ë°˜ë³µ
 	{
 		q = p;
 		p = p->next;
 	}
-	if (p == NULL && q == NULL) // ¸®½ºÆ®°¡ ºñ¾îÀÖÀ» ¶§¸¦ ÀÇ¹Ì, Áï p°¡ À¯ÀÏÇÑ ³ëµå°¡ µÊ
+	if (p == NULL && q == NULL) // ë¦¬ìŠ¤íŠ¸ê°€ ë¹„ì–´ìˆì„ ë•Œë¥¼ ì˜ë¯¸, ì¦‰ pê°€ ìœ ì¼í•œ ë…¸ë“œê°€ ë¨
 	{
 		artist_dir[(unsigned char)name[0]] = ptr_artist;
 	}
-	else if (q == NULL)	// p°¡ ¸Ç ¾Õ¿¡ À§Ä¡ÇÔ
+	else if (q == NULL)	// pê°€ ë§¨ ì•ì— ìœ„ì¹˜í•¨
 	{
 		ptr_artist->next = artist_dir[(unsigned char)name[0]];
 		artist_dir[(unsigned char)name[0]] = ptr_artist;
@@ -88,81 +88,81 @@ Song* create_song(Artist* ptr_artist, char* title)
 void insert_node(Artist* ptr_artist, SNode* ptr_snode)
 {
 	SNode* p = ptr_artist->head;
-	// head¿¡ ÀúÀåµÈ °ªº¸´Ù ptr_snode¿¡ ÀúÀåµÈ Á¦¸ñÀÌ Ä¿Áú ¶§±îÁö while¹®À» ¹İº¹ÇÔ
+	// headì— ì €ì¥ëœ ê°’ë³´ë‹¤ ptr_snodeì— ì €ì¥ëœ ì œëª©ì´ ì»¤ì§ˆ ë•Œê¹Œì§€ whileë¬¸ì„ ë°˜ë³µí•¨
 	while (p != NULL && strcmp(p->song->title, ptr_snode->song->title) < 0)
 		p = p->next;
-	// p°¡ ptr_snode°¡ µé¾î°¥ ÀÚ¸®º¸´Ù ÇÑ ÀÚ¸® µÚ¿¡ ÀÖ±â ¶§¹®¿¡ pÀÇ ¾Õ À§Ä¡¿¡ »õ·Î¿î snode¸¦ ´ëÀÔÇÔ
-	// 1. ¿¬°á¸®½ºÆ®°¡ ºñ¾îÀÖÀ» ¶§ 2. ¸Ç ¾Õ¿¡ ´ëÀÔÇÒ ¶§ 3. ¸Ç µÚ¿¡ ´ëÀÔÇÒ ¶§ 4. ³ë·¡ »çÀÌ¿¡ ´ëÀÔÇÔ
-	if (ptr_artist->head == NULL) { // Ã¹ ¹øÂ° ÄÉÀÌ½º
+	// pê°€ ptr_snodeê°€ ë“¤ì–´ê°ˆ ìë¦¬ë³´ë‹¤ í•œ ìë¦¬ ë’¤ì— ìˆê¸° ë•Œë¬¸ì— pì˜ ì• ìœ„ì¹˜ì— ìƒˆë¡œìš´ snodeë¥¼ ëŒ€ì…í•¨
+	// 1. ì—°ê²°ë¦¬ìŠ¤íŠ¸ê°€ ë¹„ì–´ìˆì„ ë•Œ 2. ë§¨ ì•ì— ëŒ€ì…í•  ë•Œ 3. ë§¨ ë’¤ì— ëŒ€ì…í•  ë•Œ 4. ë…¸ë˜ ì‚¬ì´ì— ëŒ€ì…í•¨
+	if (ptr_artist->head == NULL) { // ì²« ë²ˆì§¸ ì¼€ì´ìŠ¤
 		ptr_artist->head = ptr_snode;
-		ptr_artist->tail = ptr_snode;	// ¸®½ºÆ®ÀÇ À¯ÀÏÇÑ °îÀÌ±â ¶§¹®¿¡ ÀÌÁß ¿¬°á¸®½ºÆ®ÀÇ head¿Í tailÀÌ ¸ğµÎ ptr_snode°¡ µÊ
+		ptr_artist->tail = ptr_snode;	// ë¦¬ìŠ¤íŠ¸ì˜ ìœ ì¼í•œ ê³¡ì´ê¸° ë•Œë¬¸ì— ì´ì¤‘ ì—°ê²°ë¦¬ìŠ¤íŠ¸ì˜ headì™€ tailì´ ëª¨ë‘ ptr_snodeê°€ ë¨
 	}
-	else if (p == ptr_artist->head) { // µÎ ¹øÂ° ÄÉÀÌ½º
+	else if (p == ptr_artist->head) { // ë‘ ë²ˆì§¸ ì¼€ì´ìŠ¤
 		ptr_snode->next = ptr_artist->head;
 		ptr_artist->head->prev = ptr_snode;
-		ptr_artist->head = ptr_snode; // »õ·Î¿î °îÀÌ °î ¸®½ºÆ®ÀÇ Ã¹ ¹øÂ° °î ÀÚ¸®¿¡ À§Ä¡ÇÔ
+		ptr_artist->head = ptr_snode; // ìƒˆë¡œìš´ ê³¡ì´ ê³¡ ë¦¬ìŠ¤íŠ¸ì˜ ì²« ë²ˆì§¸ ê³¡ ìë¦¬ì— ìœ„ì¹˜í•¨
 	}
-	else if (p == NULL) { // ¼¼ ¹øÂ° ÄÉÀÌ½º
+	else if (p == NULL) { // ì„¸ ë²ˆì§¸ ì¼€ì´ìŠ¤
 		ptr_snode->prev = ptr_artist->tail;
 		ptr_artist->tail->next = ptr_snode;
 		ptr_artist->tail = ptr_snode;
 	}
-	else {	// ³× ¹øÂ° ÄÉÀÌ½º. p ¾Õ¿¡ ³ë·¡¸¦ Ãß°¡ÇÔ
+	else {	// ë„¤ ë²ˆì§¸ ì¼€ì´ìŠ¤. p ì•ì— ë…¸ë˜ë¥¼ ì¶”ê°€í•¨
 		ptr_snode->next = p;
 		ptr_snode->prev = p->prev;
 		p->prev->next = ptr_snode;
 		p->prev = ptr_snode;
 	}
 }
-void insert_to_index_dir(Song* ptr_song)	// ´Ü¹æÇâ ¿¬°á¸®½ºÆ®
+void insert_to_index_dir(Song* ptr_song)	// ë‹¨ë°©í–¥ ì—°ê²°ë¦¬ìŠ¤íŠ¸
 {
 	SNode* ptr_snode = (SNode*)malloc(sizeof(SNode));
 	ptr_snode->song = ptr_song;
 	ptr_snode->next = NULL;
 	ptr_snode->prev = NULL;
-	int index = ptr_song->index % INDEX_TABLE; // ³ë·¡ÀÇ ÀÎµ¦½º¸¦ ¹è¿­ÀÇ Å©±â·Î ³ª´« ³ª¸ÓÁö
-	SNode* p = index_dir[index];	// ÇØ´ç ÀÎµ¦½ºÀÇ Ã¹ ¹øÂ° °îÀÇ ÁÖ¼Ò
-	SNode* q = NULL; // ´Ü¹æÇâ ¿¬°á¸®½ºÆ®¸¦ ¼ø¼­°¡ ÀÖ´Â ¸®½ºÆ®·Î ¸¸µé±â À§ÇÑ Á¶°Ç
-	while (p != NULL && strcmp(p->song->title, ptr_song->title) < 0) {	// ¾ËÆÄºª¼øÀ¸·Î Á¤·ÄÇÔ
-		q = p;	// pº¸´Ù ÇÑ ¼ø¼­ µÚ¿¡ ÀÖ´Â ³ëµå
+	int index = ptr_song->index % INDEX_TABLE; // ë…¸ë˜ì˜ ì¸ë±ìŠ¤ë¥¼ ë°°ì—´ì˜ í¬ê¸°ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€
+	SNode* p = index_dir[index];	// í•´ë‹¹ ì¸ë±ìŠ¤ì˜ ì²« ë²ˆì§¸ ê³¡ì˜ ì£¼ì†Œ
+	SNode* q = NULL; // ë‹¨ë°©í–¥ ì—°ê²°ë¦¬ìŠ¤íŠ¸ë¥¼ ìˆœì„œê°€ ìˆëŠ” ë¦¬ìŠ¤íŠ¸ë¡œ ë§Œë“¤ê¸° ìœ„í•œ ì¡°ê±´
+	while (p != NULL && strcmp(p->song->title, ptr_song->title) < 0) {	// ì•ŒíŒŒë²³ìˆœìœ¼ë¡œ ì •ë ¬í•¨
+		q = p;	// pë³´ë‹¤ í•œ ìˆœì„œ ë’¤ì— ìˆëŠ” ë…¸ë“œ
 		p = p->next;
 	}
-	if (q == NULL) { // Ã¹ ¹øÂ° À§Ä¡¿¡ ÀúÀå
+	if (q == NULL) { // ì²« ë²ˆì§¸ ìœ„ì¹˜ì— ì €ì¥
 		ptr_snode->next = p;
-		index_dir[index] = ptr_snode; // ÇØ´ç ÀÎµ¦½ºÀÇ Ã¹ ¹øÂ° °îÀÌ µÊ
+		index_dir[index] = ptr_snode; // í•´ë‹¹ ì¸ë±ìŠ¤ì˜ ì²« ë²ˆì§¸ ê³¡ì´ ë¨
 	}
-	else {	// q ´ÙÀ½¿¡ Ãß°¡
+	else {	// q ë‹¤ìŒì— ì¶”ê°€
 		ptr_snode->next = p;
 		q->next = ptr_snode;
 	}
 }
 void add_song(char* artist, char* title)
 {
-	// °¡¼ö°¡ ÀÌ¹Ì Á¸ÀçÇÏ´Â °æ¿ì¸¦ °¡Á¤ÇÔ
-	// Á¸ÀçÇÏÁö ¾Ê´Â´Ù¸é NULL return
-	Artist* ptr_artist = find_artist(artist);	// °¡¼ö¸¦ Ã£¾Æ¼­ Artist Æ÷ÀÎÅÍ¸¦ return
-	if (ptr_artist == NULL)	// ¸¸¾à °¡¼ö°¡ ÇÃ·¹ÀÌ¸®½ºÆ®¿¡ Á¸ÀçÇÏÁö ¾Ê´Â °æ¿ì
+	// ê°€ìˆ˜ê°€ ì´ë¯¸ ì¡´ì¬í•˜ëŠ” ê²½ìš°ë¥¼ ê°€ì •í•¨
+	// ì¡´ì¬í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´ NULL return
+	Artist* ptr_artist = find_artist(artist);	// ê°€ìˆ˜ë¥¼ ì°¾ì•„ì„œ Artist í¬ì¸í„°ë¥¼ return
+	if (ptr_artist == NULL)	// ë§Œì•½ ê°€ìˆ˜ê°€ í”Œë ˆì´ë¦¬ìŠ¤íŠ¸ì— ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ê²½ìš°
 	{
-		ptr_artist = add_artist(artist); // artist¶ó´Â ÀÌ¸§À» °¡Áø Artist °´Ã¼¸¦ ÇÏ³ª Ãß°¡ÇÏ¿© ±× ÁÖ¼Ò¸¦ ¸®ÅÏÇÔ
+		ptr_artist = add_artist(artist); // artistë¼ëŠ” ì´ë¦„ì„ ê°€ì§„ Artist ê°ì²´ë¥¼ í•˜ë‚˜ ì¶”ê°€í•˜ì—¬ ê·¸ ì£¼ì†Œë¥¼ ë¦¬í„´í•¨
 	}
 	Song* ptr_song = create_song(ptr_artist, title);
 	SNode* ptr_snode = (SNode*)malloc(sizeof(SNode));
-	ptr_snode->song = ptr_song;	// SNodeµé³¢¸® ÀÌÁß ¿¬°á¸®½ºÆ®·Î ¿¬°áµÇ´Â ±¸Á¶.
-	ptr_snode->next = NULL; // ÀÇµµÄ¡ ¾ÊÀº ½Ç¼ö¸¦ ¹æÁöÇÏ±â À§ÇØ ±¸Á¶Ã¼ÀÇ Æ÷ÀÎÅÍ °ªÀº null·Î ¼³Á¤ÇÔ
+	ptr_snode->song = ptr_song;	// SNodeë“¤ë¼ë¦¬ ì´ì¤‘ ì—°ê²°ë¦¬ìŠ¤íŠ¸ë¡œ ì—°ê²°ë˜ëŠ” êµ¬ì¡°.
+	ptr_snode->next = NULL; // ì˜ë„ì¹˜ ì•Šì€ ì‹¤ìˆ˜ë¥¼ ë°©ì§€í•˜ê¸° ìœ„í•´ êµ¬ì¡°ì²´ì˜ í¬ì¸í„° ê°’ì€ nullë¡œ ì„¤ì •í•¨
 	insert_node(ptr_artist, ptr_snode);
 	insert_to_index_dir(ptr_song);
 }
 Artist* find_artist(char* name)
 {
-	Artist* p = artist_dir[(unsigned char)name[0]]; // Ã£´Â °¡¼ö°¡ ¼ÓÇÑ ÃÊ¼º ±×·ìÀÇ Ã¹ ¹øÂ° °¡¼ö. ¹è¿­ÀÇ ÀÌ¸§ÀÌ °ğ ÁÖ¼ÒÀÌ±â ¶§¹®!
+	Artist* p = artist_dir[(unsigned char)name[0]]; // ì°¾ëŠ” ê°€ìˆ˜ê°€ ì†í•œ ì´ˆì„± ê·¸ë£¹ì˜ ì²« ë²ˆì§¸ ê°€ìˆ˜. ë°°ì—´ì˜ ì´ë¦„ì´ ê³§ ì£¼ì†Œì´ê¸° ë•Œë¬¸!
 	/* name[0] : 00000000 ~ 11111111 */
-	// int¿¡¼­ Ã¹ ºñÆ® 1Àº À½¼ö°¡ µÊ
-	// ±×·¸±â ¶§¹®¿¡ unsigned char·Î Çüº¯È¯ÇÔ
+	// intì—ì„œ ì²« ë¹„íŠ¸ 1ì€ ìŒìˆ˜ê°€ ë¨
+	// ê·¸ë ‡ê¸° ë•Œë¬¸ì— unsigned charë¡œ í˜•ë³€í™˜í•¨
 	// char = 8bit, int = 32bit
-	while (p != NULL && strcmp(p->name, name) < 0)	// ¾ËÆÄºª ¼øÀ¸·Î ´õ Å« ÀÌ¸§ÀÌ ³ª¿Â´Ù¸é ³¡±îÁö ÀĞÁö ¾Êµµ·Ï ÇÔ
-		p = p->next; // ÀÌ¸§À» Ã£À» ¶§ ±îÁö p´Â °è¼Ó ´ÙÀ½ ³ëµå·Î ÀÌµ¿
+	while (p != NULL && strcmp(p->name, name) < 0)	// ì•ŒíŒŒë²³ ìˆœìœ¼ë¡œ ë” í° ì´ë¦„ì´ ë‚˜ì˜¨ë‹¤ë©´ ëê¹Œì§€ ì½ì§€ ì•Šë„ë¡ í•¨
+		p = p->next; // ì´ë¦„ì„ ì°¾ì„ ë•Œ ê¹Œì§€ pëŠ” ê³„ì† ë‹¤ìŒ ë…¸ë“œë¡œ ì´ë™
 	if (p != NULL && strcmp(p->name, name) == 0)
-		return p;	// p°¡ NULLÀÌ¶ó¸é NULL return, nameÀ» Ã£À¸¸é p¸¦ return
+		return p;	// pê°€ NULLì´ë¼ë©´ NULL return, nameì„ ì°¾ìœ¼ë©´ pë¥¼ return
 	else
 		return NULL;
 }
@@ -170,7 +170,7 @@ void status()
 {
 	for (int i = 0; i < CHARS_NUM; i++)
 	{
-		Artist* p = artist_dir[i];	// ¹è¿­ÀÇ ÀÌ¸§ÀÌ °ğ ÁÖ¼Ò°¡ µÊ
+		Artist* p = artist_dir[i];	// ë°°ì—´ì˜ ì´ë¦„ì´ ê³§ ì£¼ì†Œê°€ ë¨
 		while (p != NULL)
 		{
 			print_artist(p);
@@ -182,7 +182,7 @@ void status_p()
 {
 	for (int i = 0; i < INDEX_TABLE; i++)
 	{
-		SNode* p = play_list[i];	// ¹è¿­ÀÇ ÀÌ¸§ÀÌ °ğ ÁÖ¼Ò°¡ µÊ
+		SNode* p = play_list[i];	// ë°°ì—´ì˜ ì´ë¦„ì´ ê³§ ì£¼ì†Œê°€ ë¨
 		while (p != NULL)
 		{
 			print_song(p->song);
@@ -208,7 +208,7 @@ void print_song(Song* ptr_song)
 }
 void search_song1(char* artist) {
 	Artist* ptr_artist = find_artist(artist);
-	if (ptr_artist == NULL) {	// °¡¼ö°¡ Á¸ÀçÇÏÁö ¾ÊÀ» °æ¿ì¸¦ °¡Á¤
+	if (ptr_artist == NULL) {	// ê°€ìˆ˜ê°€ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš°ë¥¼ ê°€ì •
 		printf("No such artist exists.\n");
 		return;
 	}
@@ -217,20 +217,20 @@ void search_song1(char* artist) {
 SNode* find_snode(Artist* ptr_artist, char* title)
 {
 	SNode* ptr_snode = ptr_artist->head;
-	while (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) < 0)	// ptr_snodeÀÇ ³ë·¡ Á¦¸ñÀÌ titleº¸´Ù ´õ Å©´õ¶óµµ ¹İº¹ÇÒ ÀÌÀ¯°¡ ¾øÀ½
+	while (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) < 0)	// ptr_snodeì˜ ë…¸ë˜ ì œëª©ì´ titleë³´ë‹¤ ë” í¬ë”ë¼ë„ ë°˜ë³µí•  ì´ìœ ê°€ ì—†ìŒ
 		ptr_snode = ptr_snode->next;
-	if (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) == 0) // °îÀ» Ã£¾ÒÀ» °æ¿ì
+	if (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) == 0) // ê³¡ì„ ì°¾ì•˜ì„ ê²½ìš°
 		return ptr_snode;
-	else	// °îÀ» Ã£Áö ¸ø ÇßÀ» ¶§
+	else	// ê³¡ì„ ì°¾ì§€ ëª» í–ˆì„ ë•Œ
 		return NULL;
 }
 void search_song(char* artist, char* title) {
 	Artist* ptr_artist = find_artist(artist);
-	if (ptr_artist == NULL) {	// °¡¼ö°¡ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§
+	if (ptr_artist == NULL) {	// ê°€ìˆ˜ê°€ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ
 		printf("No such artist exists.\n");
 		return;
 	}
-	SNode* ptr_snode = find_snode(ptr_artist, title);	// µ¶¸³µÈ ÇÔ¼ö·Î ¸¸µé¾î¼­ »ç¿ë
+	SNode* ptr_snode = find_snode(ptr_artist, title);	// ë…ë¦½ëœ í•¨ìˆ˜ë¡œ ë§Œë“¤ì–´ì„œ ì‚¬ìš©
 	if (ptr_snode != NULL) {
 		printf("Found:\n");
 		print_song(ptr_snode->song);
@@ -242,7 +242,7 @@ void search_song(char* artist, char* title) {
 }
 SNode* find_song(int index)
 {
-	SNode* ptr_snode = index_dir[index % INDEX_TABLE]; // ÇØ´ç indexÀÇ Ã¹ ¹øÂ° ³ë·¡
+	SNode* ptr_snode = index_dir[index % INDEX_TABLE]; // í•´ë‹¹ indexì˜ ì²« ë²ˆì§¸ ë…¸ë˜
 	while (ptr_snode != NULL && ptr_snode->song->index != index)
 		ptr_snode = ptr_snode->next;
 	return ptr_snode;
@@ -271,7 +271,7 @@ void playlist(int index)
 void save_song(Song* ptr_song, FILE* fp)
 {
 	if (ptr_song->artist != NULL)
-		fprintf(fp, "%s#", ptr_song->artist->name); // ÆÄÀÏ¿¡ Ãâ·Â
+		fprintf(fp, "%s#", ptr_song->artist->name); // íŒŒì¼ì— ì¶œë ¥
 	else
 		fprintf(fp, " #");
 	if (ptr_song->title != NULL)
@@ -292,7 +292,7 @@ void save(FILE* fp)
 {
 	for (int i = 0; i < CHARS_NUM; i++)
 	{
-		Artist* p = artist_dir[i];	// ¹è¿­ÀÇ ÀÌ¸§ÀÌ °ğ ÁÖ¼Ò°¡ µÊ
+		Artist* p = artist_dir[i];	// ë°°ì—´ì˜ ì´ë¦„ì´ ê³§ ì£¼ì†Œê°€ ë¨
 		while (p != NULL)
 		{
 			save_artist(p, fp);
@@ -303,30 +303,30 @@ void save(FILE* fp)
 void remove1(int index)
 {
 	SNode* q = NULL;
-	SNode* p = index_dir[index % INDEX_TABLE]; // ÇØ´ç indexÀÇ Ã¹ ¹øÂ° ³ë·¡. Áï head node
+	SNode* p = index_dir[index % INDEX_TABLE]; // í•´ë‹¹ indexì˜ ì²« ë²ˆì§¸ ë…¸ë˜. ì¦‰ head node
 	while (p != NULL && p->song->index != index) {
 		q = p;
 		p = p->next;
 	}
-	if (p == NULL) {	// Ã³À½ºÎÅÍ ºó list or °îÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» °æ¿ì
+	if (p == NULL) {	// ì²˜ìŒë¶€í„° ë¹ˆ list or ê³¡ì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš°
 		printf("No such song exists.\n");
 		return;
 	}
-	Song* ptr_song = p->song; // SNode¿Í Song ¸ğµÎ »èÁ¦ÇØ¾ß ÇÔ. Artist¿¡¼­ÀÇ ³ë·¡¿Í ÀÎµ¦½º¿¡¼­ÀÇ ³ë·¡ ¸ğµÎ¸¦ »èÁ¦
-	if (q == NULL) { // first »èÁ¦
-		index_dir[index % INDEX_TABLE] = p->next; // p ´ÙÀ½ ³ë·¡¸¦ ¹è¿­ÀÇ head·Î ÀúÀåÇÔ
+	Song* ptr_song = p->song; // SNodeì™€ Song ëª¨ë‘ ì‚­ì œí•´ì•¼ í•¨. Artistì—ì„œì˜ ë…¸ë˜ì™€ ì¸ë±ìŠ¤ì—ì„œì˜ ë…¸ë˜ ëª¨ë‘ë¥¼ ì‚­ì œ
+	if (q == NULL) { // first ì‚­ì œ
+		index_dir[index % INDEX_TABLE] = p->next; // p ë‹¤ìŒ ë…¸ë˜ë¥¼ ë°°ì—´ì˜ headë¡œ ì €ì¥í•¨
 	}
-	else {	// q ´ÙÀ½À» »èÁ¦ÇÔ
+	else {	// q ë‹¤ìŒì„ ì‚­ì œí•¨
 		q->next = p->next;
 	}
-	free(p); // »èÁ¦µÈ ÀÎµ¦½ºÀÇ SNode¸¦ »èÁ¦ÇÔ
+	free(p); // ì‚­ì œëœ ì¸ë±ìŠ¤ì˜ SNodeë¥¼ ì‚­ì œí•¨
 	Artist* ptr_artist = ptr_song->artist;
 	SNode* ptr_snode = find_snode(ptr_artist, ptr_song->title);
 	if (ptr_snode == NULL) {
 		printf("Failed to find snode.\n");
 		return;
 	}
-	// ArtistÀÇ SNode¸¦ Ã£¾ÒÀ» ¶§
+	// Artistì˜ SNodeë¥¼ ì°¾ì•˜ì„ ë•Œ
 	remove_snode(ptr_artist, ptr_snode);
 	destroy_song(ptr_song);
 }
@@ -334,19 +334,19 @@ void remove_snode(Artist* ptr_artist, SNode* ptr_snode)
 {
 	SNode* first = ptr_artist->head;
 	SNode* last = ptr_artist->tail;
-	if (first == ptr_snode && last == ptr_snode) { // SNode°¡ À¯ÀÏÇÑ ³ëµåÀÏ °æ¿ì
+	if (first == ptr_snode && last == ptr_snode) { // SNodeê°€ ìœ ì¼í•œ ë…¸ë“œì¼ ê²½ìš°
 		first = NULL;
 		last = NULL;
 	}
-	else if (first == ptr_snode) { // Ã¹ ¹øÂ°¸¦ »èÁ¦ÇÔ
+	else if (first == ptr_snode) { // ì²« ë²ˆì§¸ë¥¼ ì‚­ì œí•¨
 		ptr_snode->next->prev = NULL;
 		first = ptr_snode->next;
 	}
-	else if (last == ptr_snode) { // ¸¶Áö¸· ¹øÂ°¸¦ »èÁ¦ÇÔ
+	else if (last == ptr_snode) { // ë§ˆì§€ë§‰ ë²ˆì§¸ë¥¼ ì‚­ì œí•¨
 		ptr_snode->prev->next = NULL;
 		last = ptr_snode->prev;
 	}
-	else { // °¡¿îµ¥ ¹øÂ°
+	else { // ê°€ìš´ë° ë²ˆì§¸
 		ptr_snode->next->prev = ptr_snode->prev;
 		ptr_snode->prev->next = ptr_snode->next;
 	}
@@ -358,63 +358,81 @@ void destroy_song(Song* ptr_song)
 		free(ptr_song->title);
 	free(ptr_song);
 }
-/* ´ÙÀ½Àº Â÷Æ® °ü·Ã ÄÚµåÀÔ´Ï´Ù
-#define SIZE_CHART 10 // 10°³ À½¾ÇÀ» Ãâ·ÂÇÒ ¼ö ÀÖ´Â Â÷Æ®
+/* ë‹¤ìŒì€ ì°¨íŠ¸ ê´€ë ¨ ì½”ë“œì…ë‹ˆë‹¤
+#define SIZE_CHART 10 // 10ê°œ ìŒì•…ì„ ì¶œë ¥í•  ìˆ˜ ìˆëŠ” ì°¨íŠ¸
 
-Song* play_chart[SIZE_CHART]; // Â÷Æ® ÀúÀåÇÏ´Â ¸®½ºÆ®
+Song* play_chart[SIZE_CHART]; // ì°¨íŠ¸ ì €ì¥í•˜ëŠ” ë¦¬ìŠ¤íŠ¸
 
-int chart_index = 0; // ´ÙÀ½ À½¾Ç ÀúÀå index(À§Ä¡)
+int chart_index = 0; // ë‹¤ìŒ ìŒì•… ì €ì¥ index(ìœ„ì¹˜)
 
 void status_chart()
 {
 	for (int i = 0; i < NUM_CHARS; i++)
 	{
-		Artist* p = artist_directory[i];   // ¿¹ i=65ÀÏ¶§, p°¡ ÀÌ¸§'A'(ASCIIÄÚµå)·Î ½ÃÀÛÇÏ´Â °¡¼ö¸¦ °¡¸®Å²´Ù
-		init_chart(p);  // Â÷Æ®¿¡ ´ëÇÑ ÃÊ±âÈ­(¹ÌÀÛ¼º)
+		Artist* p = artist_directory[i];   // ì˜ˆ i=65ì¼ë•Œ, pê°€ ì´ë¦„'A'(ASCIIì½”ë“œ)ë¡œ ì‹œì‘í•˜ëŠ” ê°€ìˆ˜ë¥¼ ê°€ë¦¬í‚¨ë‹¤
+		init_chart(p);  // ì°¨íŠ¸ì— ëŒ€í•œ ì´ˆê¸°í™”(ë¯¸ì‘ì„±)
 		while (p != NULL)
 		{
-			creat_chart(p); //"A"°¡¼öÀÇ ¸®½ºÆ®¿¡ ´ëÇØ ÇÔ¼ö È£Ãâ
-			p = p->next;    // ´ÙÀ½ ÀÌ¸§À¸·Î ÀÌµ¿
+			create_chart(p); //"A"ê°€ìˆ˜ì˜ ë¦¬ìŠ¤íŠ¸ì— ëŒ€í•´ í•¨ìˆ˜ í˜¸ì¶œ
+			p = p->next;    // ë‹¤ìŒ ì´ë¦„ìœ¼ë¡œ ì´ë™
 		}
 	}
 }
 
-void creat_chart(Artist* p)
+void create_chart(Artist* p)
 {
 	SNode* ptr_snode = p->head;
 	while (ptr_snode != NULL)
 	{
-		if (chart_index == 0) { // Â÷Æ®°¡ ºñ¾îÀÖ´Â »óÈ², play_chart[0]À§Ä¡¿¡ ¸ÕÀú µ¥ÀÌÅÍ ÇÏ³ª ÀúÀå
+		if (chart_index > 10) { 
 			play_chart[chart_index] = ptr_snode->song;
 			ptr_snode = ptr_snode->next;
-			chart_index++; //chart_index = 1;
+			chart_index++; // till chart_index = 10;
 		}
-
+		
+		
+		
 		while (ptr_snode->song != NULL) {
-			if (ptr_snode->song->playtimes > play_chart[chart_index - 1]->playtimes) { // ptr°¡¸®Å°´Â ´ë»óÀÇ À½¾Ç°ú ¸¶Áö¸· À§Ä¡ÀÇ À½¾ÇÀÇ playtimes ºñ±³
-			   // ´ÙÀ½¿¡ Â÷Æ® sort ÇÏ·Á°í
-				insert_to_chart(ptr_snode->song); // ÇÔ¼öÈ£ÃâÇÏ¿© ptr->song¸¦ Â÷Æ®¿¡ »ğÀÔ(playtimes: big->small)
-				chart_index++;     //´ÙÀ½ À§Ä¡ Ç¥±â
+			if (ptr_snode->song->playtimes > play_chart[chart_index - 1]->playtimes) { // ptrê°€ë¦¬í‚¤ëŠ” ëŒ€ìƒì˜ ìŒì•…ê³¼ ë§ˆì§€ë§‰ ìœ„ì¹˜ì˜ ìŒì•…ì˜ playtimes ë¹„êµ
+			   // ë‹¤ìŒì— ì°¨íŠ¸ sort í•˜ë ¤ê³ 
+				insert_to_chart(ptr_snode->song); // í•¨ìˆ˜í˜¸ì¶œí•˜ì—¬ ptr->songë¥¼ ì°¨íŠ¸ì— ì‚½ì…(playtimes: big->small)
+				chart_index++;     //ë‹¤ìŒ ìœ„ì¹˜ í‘œê¸°
 			}
 			ptr_snode = ptr_snode->next;
 		}
 	}
 }
 
+// ì°¨íŠ¸ ì´ˆê¸°í™”
+void sort_chart() {
+	int i, j, max;
+	Song* temp;
+	for (i = 0; i < chart_index - 1; i++) {
+		max = temp;
+		for (j = i + 1; j < chart_index; j++) {
+			if (play_chart[max] < play_chart[j])
+				max = j;
+		}
+		play_chart[max] = temp;
+		play_chart[max] = play_chart[i];
+		play_chart[i] = temp;
+	}
+}
+
 void insert_to_chart(Song* ptr)
 {
-	for (int i = 0; i > chart_index - 1; i++)//¸¶Áö¸· µ¥ÀÌÅÍ¿Í ºñ±³
+	for (int i = 0; i > chart_index - 1; i++)//ë§ˆì§€ë§‰ ë°ì´í„°ì™€ ë¹„êµ
 	{
 		if (play_chart[i]->playtimes < ptr->playtimes)
 		{
-			// (i°¡ ptrÀúÀåÇÏ°í ½ÍÀº À§Ä¡ÀÇ index)
+			// (iê°€ ptrì €ì¥í•˜ê³  ì‹¶ì€ ìœ„ì¹˜ì˜ index)
 //Loop:
-// index:8~iÀÇ µ¥ÀÌÅÍ µÚÀ¸·Î ÇÑÄ­ ÀÌµ¿
-// ptrÀ» i¿¡ »ğÀÔ
+// index:8~iì˜ ë°ì´í„° ë’¤ìœ¼ë¡œ í•œì¹¸ ì´ë™
+// ptrì„ iì— ì‚½ì…
 			for (int j = 8; j > i; j++) {
-				// ¾î¶»°Ô ÀÌµ¿ÇÒÁö ±¸Çö(¹Ì¿Ï¼º)
+				// ì–´ë–»ê²Œ ì´ë™í• ì§€ êµ¬í˜„(ë¯¸ì™„ì„±)
 				if (play_chart[j] != NULL) {
-					// NULLÀÌ¸é ¾ÕÀ¸·Î ÀÌµ¿
+					// NULLì´ë©´ ì•ìœ¼ë¡œ ì´ë™
 				}
 			}
 		}
