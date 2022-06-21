@@ -1,0 +1,5 @@
+C:\Study\음악 라이브러리3\x64\Debug\음악 라이브러리3.exe
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리3\x64\Debug\음악 라이브러리3.exe
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리\x64\Debug\음악 라이브러리3.exe
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리 - 복사본\x64\Debug\음악 라이브러리3.exe
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리(수정)\x64\Debug\음악 라이브러리3.exe

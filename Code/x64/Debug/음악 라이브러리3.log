@@ -1,0 +1,5 @@
+﻿  library.c
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리(수정)\library.h(40,44): warning C4031: 둘째 정식 매개 변수 목록이 첫째 목록보다 깁니다.
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리(수정)\library.c(185,1): warning C4133: '초기화 중': 'Artist *'과(와) 'SNode *' 사이의 형식이 호환되지 않습니다.
+C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리(수정)\library.c(266,28): warning C4133: '=': 'SNode *'과(와) 'Artist *' 사이의 형식이 호환되지 않습니다.
+  음악 라이브러리3.vcxproj -> C:\Users\yongh\OneDrive\바탕 화면\음악 라이브러리(수정)\x64\Debug\음악 라이브러리3.exe
