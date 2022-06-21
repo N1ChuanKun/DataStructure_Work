@@ -390,7 +390,7 @@ void create_chart(Artist* p)
 			chart_index++; // till chart_index = 10;
 		}
 		
-		
+		sort_chart(); // 정렬 초기화
 		
 		while (ptr_snode->song != NULL) {
 			if (ptr_snode->song->playtimes > play_chart[chart_index - 1]->playtimes) { // ptr가리키는 대상의 음악과 마지막 위치의 음악의 playtimes 비교
